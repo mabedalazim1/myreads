@@ -12,6 +12,16 @@ body, .app {
 
 /* main page */
 
+/* Not Found */
+
+.not-found{
+  margin: 50px auto;
+  width: 100%;
+  text-align: center;
+}
+.not-found p{
+  margin-top:20px;
+}
 .list-books-title {
   padding: 10px 0;
   background: #2e7c31;
