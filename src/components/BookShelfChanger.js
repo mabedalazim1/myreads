@@ -2,12 +2,12 @@ import React  from "react";
 
 function BookShelfChanger (props){
     
- 
-      const{changeBook,book}=props
+console.log(props)
+      const{changeShaelf,book}=props
         return (
             <div className="book-shelf-changer">
                   <select value={book.shelf}
-              onChange={e =>changeBook(book, e.target.value)}>
+              onChange={e =>changeShaelf(book, e.target.value)}>
                     <option value="move" disabled>Move to...</option>
                     <option value="currentlyReading">Currently Reading</option>
                     <option value="wantToRead">Want to Read</option>

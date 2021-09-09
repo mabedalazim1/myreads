@@ -22,6 +22,9 @@ body, .app {
 .not-found p{
   margin-top:20px;
 }
+.err{
+  color: red;
+}
 .list-books-title {
   padding: 10px 0;
   background: #2e7c31;

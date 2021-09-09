@@ -3,75 +3,57 @@ import { Route, Switch } from 'react-router-dom'
 import BookList from './components/BookLisit'
 import SearchBooks from './components/SearchBooks'
 import * as BooksAPI from './utils/BooksAPI'
-// import { debounce } from 'throttle-debounce';
 import './App.css'
 import NotFound from './utils/NotFound'
 
 class BooksApp extends React.Component {
   
   state = {
-    books: [],
-    err: "Ther Is No Books In This Shelf",
-    serverError: undefined,
-    fetchDtat :true,
+    listBooks: [],
+    fechErr: ""
   };
   componentDidMount = () => {
+    this.fetchListBooks();
+  }
+
+  fetchListBooks = () => {
     BooksAPI.getAll()
       .then((books) => {
+        !books.length ?
+          this.setState({fechErr:"Err On Server"})
+        :
         this.setState({
-          books
+          listBooks: books,
+          fechErr :""
         })
-    })
-      
-    // .then(books => {
-    //   if (!books.length) {
-    //     this.setState({
-    //       serverError: undefined,
-    //       fetchDtat: false
-    //   } );
-    //   }
-    //   else {
-    //     this.setState({
-    //       books: books,
-    //       serverError: undefined,
-    //       fetchDtat: false
-    //     });
-    // }
-    // })
-    //   .catch(err => {
-    //     this.setState({
-    //       serverError: "Ther Is An Error Loding Data .. Please Test Concation",
-    //       fetchDtat:false
-    //     })
-    // })
+      })
   }
 
-  changeBook = (book, shlef) => {
-    book.shlef = shlef;
+  changeShaelf = (book, shelf) => {
+    book.shelf = shelf;
     this.setState(prevState => ({
-      books: prevState.books.filter(b => b.id !== book.id).concat([book])
+      books: prevState.listBooks.filter(b => b.id !== book.id).concat([book])
     }));
-  }
+    BooksAPI.update(book, shelf);
+  };
 
   render() {
-    console.log(this.state.books)
-    const { books, err, fetchDtat, serverError } = this.state;
-    const { changeBook } = this;
+
+    const { listBooks, fechErr } = this.state;
+    const { changeShaelf } = this;
     return (
       <div className="app">
           <Switch>
           <Route exact path="/" render={ () => (
             <BookList
-              fetchDtat={fetchDtat}
-              books={books}
-              err={err}
-              serverError={serverError}  
+              listBooks={listBooks}
+              fechErr={fechErr} 
             />
           ) } />
             <Route exact path="/search"  render={() => (
             <SearchBooks
-              changeBook={changeBook}
-              books={books}
+            changeShaelf={changeShaelf}
+              listBooks={listBooks}
             />
           )}
         />

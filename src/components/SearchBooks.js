@@ -1,56 +1,57 @@
 import React, { Component } from "react";
 import { Link } from 'react-router-dom';
 import * as BooksAPI from "../utils/BooksAPI";
-import { debounce } from "lodash";
 import Book from "./Book";
 
 class SearchBooks extends Component{
   state = {
     query: "",
-    showingBooks: [],
-    error: undefined
+    err: "",
+    newBooks: []
   };
-  onUpdateQuery = e => {
+
+  updateQuery = e => {
     const query = e.target.value;
     this.setState({
       query: query,
-      error: undefined
+      err: "",
+      newBooks :[]
     });
-    this.searchBooks(query.trim());
+    this.searchData(query.trim());
   };
-  searchBooks = debounce(query => {
+
+  searchData = (query => {
     if (!query) {
-      this.setState({ showingBooks: [] });
+      this.setState({ newBooks: [] });
       return;
     }
     BooksAPI.search(query)
       .then(books => {
         if (!books || books.error) {
           this.setState({
-            showingBooks: [],
-            error: "No books were found, please change your search term"
+            newBooks: [],
+            err: "Your Book Is Not Found ... Can you serach again?"
           });
           return;
         }
         books = books.map(book => {
-          const bookOnShelf = this.props.books.find(b => b.id === book.id);
-          book.shelf = bookOnShelf ? bookOnShelf.shelf : "none";
+          const bookShelf = this.props.listBooks.find(b => b.id === book.id);
+          book.shelf = bookShelf ? bookShelf.shelf : "none";
           return book;
         });
-        this.setState({ showingBooks: books });
+        this.setState({ newBooks: books });
       })
       .catch(err => {
         this.setState({
-          showingBooks: [],
-          error:
-            "There was an error searching for books, please check your connection"
+          newBooks: [],
+          error:err
         });
       });
-  }, 300);
+  });
   render() {
-    const { query, showingBooks, error } = this.state;
-    const { changeBook } = this.props;
-    const { onUpdateQuery } = this;
+    const { query, err, newBooks } = this.state;
+    const { changeShaelf } = this.props;
+    const { updateQuery } = this;
     return (
       <div className="search-books">
         <div className="search-books-bar">
@@ -59,7 +60,7 @@ class SearchBooks extends Component{
           </Link>
           <div className="search-books-input-wrapper">
             <input
-              onChange={onUpdateQuery}
+              onChange={ updateQuery}
               value={query}
               type="text"
               placeholder="Search by title or author"
@@ -68,15 +69,15 @@ class SearchBooks extends Component{
         </div>
         <div className="search-books-results">
           <ol className="books-grid">
-            {showingBooks.length
-              ? showingBooks.map(book => (
+            {newBooks.length
+              ? newBooks.map(book => (
                   <Book
-                    changeBook={changeBook}
+                    changeShaelf={changeShaelf}
                     key={book.id}
                     book={book}
                   />
                 ))
-              : query && error && <p className="error">{error}</p>}
+              : err && query && <div className="err">{err}</div>}
           </ol>
         </div>
       </div>
