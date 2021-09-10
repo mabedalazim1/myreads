@@ -10,8 +10,10 @@ class BooksApp extends React.Component {
   
   state = {
     listBooks: [],
-    fechErr: ""
+    fechErr: "",
+    loding: false,
   };
+  
   componentDidMount = () => {
     this.fetchListBooks();
   }
@@ -20,39 +22,50 @@ class BooksApp extends React.Component {
     BooksAPI.getAll()
       .then((books) => {
         !books.length ?
-          this.setState({fechErr:"Err On Server"})
+          this.setState({
+            fechErr: "Err On Server .. Please Try Agine",
+            loding:true
+          })
         :
         this.setState({
           listBooks: books,
-          fechErr :""
+          fechErr: "",
+          loding: true,
         })
       })
   }
-
-  changeShaelf = (book, shelf) => {
+  
+  changeShelf = (book, shelf) => {
     book.shelf = shelf;
+    shelf === 'none' ?
     this.setState(prevState => ({
-      books: prevState.listBooks.filter(b => b.id !== book.id).concat([book])
+      listBooks: prevState.listBooks.filter(b => b.id !== book.id),
+    }))
+      :
+    this.setState(prevState => ({
+      listBooks: prevState.listBooks.filter(b => b.id !== book.id).concat([book])
     }));
     BooksAPI.update(book, shelf);
   };
 
   render() {
 
-    const { listBooks, fechErr } = this.state;
-    const { changeShaelf } = this;
+    const { listBooks, fechErr,loding } = this.state;
+    const { changeShelf } = this;
     return (
       <div className="app">
           <Switch>
           <Route exact path="/" render={ () => (
             <BookList
               listBooks={listBooks}
-              fechErr={fechErr} 
+              fechErr={ fechErr }
+              changeShelf={ changeShelf }
+              loding={loding}
             />
           ) } />
             <Route exact path="/search"  render={() => (
             <SearchBooks
-            changeShaelf={changeShaelf}
+              changeShelf={changeShelf}
               listBooks={listBooks}
             />
           )}

@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Link } from 'react-router-dom';
+import { debounce } from "lodash";
 import * as BooksAPI from "../utils/BooksAPI";
 import Book from "./Book";
 
@@ -20,11 +21,14 @@ class SearchBooks extends Component{
     this.searchData(query.trim());
   };
 
-  searchData = (query => {
-    if (!query) {
-      this.setState({ newBooks: [] });
-      return;
-    }
+  searchData = debounce(query => {
+    !query
+    ?
+      (this.setState({
+        newBooks: [],
+        err:"Type your search trm"
+      }))
+    :
     BooksAPI.search(query)
       .then(books => {
         if (!books || books.error) {
@@ -44,13 +48,13 @@ class SearchBooks extends Component{
       .catch(err => {
         this.setState({
           newBooks: [],
-          error:err
+          err:err
         });
       });
-  });
+  },400);
   render() {
     const { query, err, newBooks } = this.state;
-    const { changeShaelf } = this.props;
+    const { changeShelf } = this.props;
     const { updateQuery } = this;
     return (
       <div className="search-books">
@@ -72,7 +76,7 @@ class SearchBooks extends Component{
             {newBooks.length
               ? newBooks.map(book => (
                   <Book
-                    changeShaelf={changeShaelf}
+                    changeShelf={changeShelf}
                     key={book.id}
                     book={book}
                   />

@@ -1,49 +1,47 @@
 import React  from "react";
 import OpenSerach from "./OpenSearch";
 import BookShelf from './BookShelf'
-const  BookList = ({ listBooks,fechErr,  err,changeBook, })=> {
-    
-  console.log(listBooks)
-    let currentReading = listBooks.filter(
-        book => book.shelf === "currentlyReading"
-    );
-    let wantToRead = listBooks.filter(book => book.shelf === "wantToRead");
-    let read = listBooks.filter(book => book.shelf === "read");
+const  BookList = ({ listBooks, err, changeShelf, loding })=> {
+  let currentReading = listBooks.filter(book => book.shelf === "currentlyReading");
+  const countCurrentReadin = currentReading.length;
+  let toRead = listBooks.filter(book => book.shelf === "wantToRead");
+  const countToRead = toRead.length;
+  let read = listBooks.filter(book => book.shelf === "read");
+  const countRead = read.length;
     return (
-      
             <div className="list-books">
                 <div className="list-books-title">
                     <h1>MyReads</h1>
                 </div>
-               
-                 
-                    
-                        <React.Fragment>
+        <div className="list-books-content">
+          <React.Fragment>
+            
+              <BookShelf
+                changeShelf={ changeShelf }
+                books={ currentReading }
+                title="Currently Reading"
+                error={ err }
+                count={ countCurrentReadin }
+                loding={loding}
+              /> 
             <BookShelf
-              changeBook={changeBook}
-              books={currentReading}
-              title="Currently Reading"
-              error={err}
-            />
-            <BookShelf
-              changeBook={changeBook}
-              books={wantToRead}
+              changeShelf={changeShelf}
+              books={toRead}
               title="Want To Read"
-              error={err}
+              error={ err }
+              count={ countToRead }
+              loding={loding}
             />
             <BookShelf
-              changeBook={changeBook}
+              changeShelf={changeShelf}
               books={read}
               title="Read"
-              error={err}
+              error={ err }
+              count={ countRead }
+              loding={loding}
             />
           </React.Fragment>
-                  
-
-
-            
-
-
+            </div> 
                 <OpenSerach />
             </div>
         )
